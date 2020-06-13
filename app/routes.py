@@ -21,7 +21,7 @@ def login():
         if userData and userData['password'] == form.password.data:
             flash(f"{userData['username']},you are successfully logged in!","success")
             session['username'] = userData['username']
-            return redirect("/index")
+            return redirect("/index",)
         else:
             flash("sorry try again!","danger")
     return render_template("login.html",login=True,title="Login",form=form)        
