@@ -6,13 +6,6 @@
 body{
     background-color: aqua;
 }
-.footer{
-    background-color: grey;
-    clear: both;
-    position: relative;
-    height:100px;
-    margin-top: -200px;
-}
-.col{
-    margin-top: 100px;
-}
+.alert {
+    width:40%;    
+ }
