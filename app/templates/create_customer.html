@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>Create new customer</h1>
+    <div class="d-flex justify-content-center align-items-center container">
+        <div class="row ">
+                <form action="" method="POST" novalidate >
+                    {{ form.hidden_tag() }}
+                    <div class="form-group">
+                        {{ form.customerID.label() }}
+                        {% if cid %} 
+                            {{ form.customerID(disabled=True,class="form-control")}}
+                        {% else %}
+                            {{ form.customerID(class="form-control")}}
+                        {% endif %}
+                        {% for error in form.customerID.errors %}
+                            <span class="alert alert-danger">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {{ form.name.label() }}
+                        {{ form.name(class="form-control") }}
+                        {% for error in form.name.errors %}
+                            <span class="alert alert-danger">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {{ form.age.label() }}
+                        {{ form.age(class="form-control") }}
+                        {% for error in form.age.errors %}
+                            <span class="alert alert-danger">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {{ form.addressline1.label() }}
+                        {{ form.addressline1(class="form-control") }}
+                        {% for error in form.addressline1.errors %}
+                            <span class="alert alert-danger">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {{ form.addressline2.label() }}
+                        {{ form.addressline2(class="form-control") }}
+                        {% for error in form.addressline2.errors %}
+                            <span class="alert alert-danger">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {{ form.city.label() }}
+                        {{ form.city(class="form-control") }}
+                        {% for error in form.city.errors %}
+                            <span class="alert alert-danger">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {{ form.state.label() }}
+                        {{ form.state(class="form-control") }}
+                        {% for error in form.state.errors %}
+                            <span class="alert alert-danger">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <p>
+                        {% if cid %}
+                            <button type="submit" class="btn btn-primary">Update</button>
+                        {% else %}
+                            <button type="submit" class="btn btn-primary">Create</button>
+                        {% endif %}
+                    </p>
+                </form>    
+            </div>        
+    </div>
+{% endblock %}
