@@ -1,0 +1,107 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="d-flex justify-content-center align-item-center">   
+    {% if delete %}
+    <h3>Confirm delete</h3>
+    <table class="table table-bordered">
+        <tr>
+            <th>SSN ID</th>
+            <td>{{ one_customer['customer_id'] }}</td>
+        </tr>
+        <tr>
+            <th>Name</th>
+            <td>{{ one_customer['name'] }}</td>
+        </tr>
+        <tr>
+            <th>Age</th>
+            <td>{{ one_customer['age'] }}</td>
+        </tr>
+        <tr>
+            <th>Addressline1</th>
+            <td>{{ one_customer['addressline1'] }}</td>
+        </tr>
+        <tr>
+            <th>Addresline2</th>
+            <td>{{ one_customer['addressline2'] }}</td>
+        </tr>
+        <tr>
+            <th>City</th>
+            <td>{{ one_customer['city'] }}</td>
+        </tr>
+        <tr>
+            <th>State</th>
+            <td>{{ one_customer['state'] }}</td>
+        </tr>
+        <tr>
+            <th>Accounts</th>
+            <td>
+                {% for account in accounts %}
+                    <p>{{account['account_id']}}</p>
+                    <p>{{account['account_type']}}</p>
+                    <p>{{account['amount']}}</p>
+                {% endfor %}
+            </td>
+        </tr>
+        {% if not view %}
+        <tr>
+            <td>
+                <form action="{{ url_for('deleteCustomer')}}" method="post">
+                    <input type="hidden" name="delete" value="True" >
+                    <input type="hidden" name="customer_id" value="{{ one_customer['customer_id'] }}">
+                    <button class="btn btn-danger">Confirm Delete</button>
+                </form>
+            </td>
+            <td>
+                <form action="{{ url_for('deleteCustomer')}}" method="post">
+                    <input type="hidden" name="delete" value="False" >
+                    <input type="hidden" name="customer_id" value="{{ one_customer['customer_id'] }}">
+                    <button class="btn btn-primary">Cancel</button>
+                </form>
+            </td>
+        </tr>
+        {% endif %}
+    </table>
+    {% else %}
+    <h3>Customer Detail</h3>
+    {% if not existingCustomers %}
+    <h3 class="text-center">No customers exists</h3>
+    {% else %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">SSN ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Age</th>
+                    <th scope="col">City</th>
+                    <th scope="col">State</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cus in existingCustomers %}
+                <tr>
+                    <td>{{cus['customer_id']}}</td>
+                    <td>{{cus['name']}}</td>
+                    <td>{{cus['age']}}</td>
+                    <td>{{cus['city']}}</td>
+                    <td>{{cus['state']}}</td>
+                    <td>
+                        <form action="{{ url_for('deleteCustomer') }}" method="post">
+                            <input type="hidden" name="show" value="True">
+                            <input type="hidden" name="customer_id" value="{{ cus['customer_id'] }}">
+                            {% if view %}
+                            <input type="hidden" name="view" value="True">
+                            <button type="submit" class="btn btn-primary">View</button>
+                            {% else %}
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                            {% endif %}
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% endif %}
+</div>
+{% endblock %}
