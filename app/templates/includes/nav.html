@@ -2,23 +2,31 @@
     <div class="page-header" style="margin: 20px;">
         <ul class="nav nav-tabs justify-content-center">
             <li class="nav-item">
-                <a class="nav-link active" href="#">Home</a>
+                <a class="nav-link {% if index %} active {% endif %}" href="{{ url_for('index') }}">Home</a>
             </li>
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Account Info</a>
+                <a class="nav-link {% if create_account %} active {% endif %} dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Account Info</a>
                 <div class="dropdown-menu">
-                <a class="dropdown-item" href="#">Action</a>
-                <a class="dropdown-item" href="#">Another action</a>
-                <a class="dropdown-item" href="#">Something else here</a>
+                <a class="dropdown-item" href="{{ url_for('create_account') }}">Create Account</a>
+                <a class="dropdown-item" href="{{ url_for('delete_account') }}">Delete Account</a>
+                <a class="dropdown-item" href="#">Account Detail </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Separated link</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link {% if (create_customer or delete_customer) %} active {% endif %} dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Customer Info</a>
+                <div class="dropdown-menu">
+                <a class="dropdown-item" href="{{ url_for('create_customer') }}">Create Customer</a>
+                <a class="dropdown-item" href="{{ url_for('view_customer') }}">Delete Customer</a>
+                <a class="dropdown-item" href="{{ url_for('view_customer',view=True) }}">View Customer</a>
+                <a class="dropdown-item" href="{{ url_for('update_customer') }}">Update Customer</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#">Separated link</a>
                 </div>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">customer</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">About</a>
+                <a class="nav-link " href="#" tabindex="-1" aria-disabled="true">About</a>
             </li>
         </ul>
     </div>
