@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm,RecaptchaField
 from wtforms import StringField,PasswordField,SubmitField,SelectField,IntegerField
-from wtforms.validators import DataRequired,Required,NumberRange,Regexp,Length
+from wtforms.validators import DataRequired,Required,NumberRange,Regexp,Length,ValidationError
 
 class LoginForm(FlaskForm):
     username = StringField(label="Username",validators=[DataRequired()])
@@ -15,7 +15,7 @@ class CreateAccount(FlaskForm):
     submit = SubmitField(label="Create")
 
 class DeleteAccount(FlaskForm):
-    accountID = StringField(label="Account ID",validators=[DataRequired()])
+    customerID = StringField(label="Customer ID",validators=[DataRequired()])
     account_type = SelectField(label="Account Type",choices=accounts,validators=[Required()])
     submit = SubmitField(label="Delete")
 
