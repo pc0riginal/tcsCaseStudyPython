@@ -20,13 +20,14 @@ def login():
     if session.get("username"):
         return redirect("/index")
     form = LoginForm()
-    form.username.data ='tcs101'
-    form.password.data = 'tcs12345'
+    form.username.data ='tcs102'
+    form.password.data = 'tcs1023'
     if form.validate_on_submit():
         userData = user.find_one({"username":form.username.data})
         if userData and userData['password'] == form.password.data:
             flash(f"{userData['username']},you are successfully logged in!","success")
             session['username'] = userData['username']
+            session['type'] = userData['type']
             return redirect("/index",)
         else:
             flash("sorry try again!","danger")
@@ -49,12 +50,43 @@ def create_account():
             flash(f"sorry try again","danger")
     return render_template("create_account.html",create_account=True,form=form)
 
+@app.route('/viewAccount',methods=['GET','POST'])
+@app.route('/viewAccount/<view>',methods=['GET','POST'])
+def viewAccount(view=None):
+    if not session.get("username"):
+        return redirect('/login')
+    form = DeleteAccount()
+    if form.validate_on_submit():
+        one_customer = customer.find_one({"customer_id":form.customerID.data})
+        if one_customer:
+            return redirect(url_for("view_account",cid=form.customerID.data,view=view))
+        else:
+            flash("customer not exist")
+    return render_template("delete_account.html",form=form,delete_account=True,view=view)
+
+@app.route("/view_account",methods=['GET','POST'])
+@app.route("/view_account/<cid>",methods=['GET','POST'])
+def view_account(cid=None,view=None):
+    if not session.get("username"):
+        return redirect('/login')
+    if cid:
+        accounts = account.find({"customer_id":cid})
+    return render_template("delete_account.html",accounts=accounts,cid=cid,view_account=True,view=request.args.get('view'))
+
 @app.route("/delete_account",methods=['GET','POST'])
 def delete_account():
     if not session.get("username"):
         return redirect('/login')
-    form = DeleteAccount()
-    return render_template("delete_account.html",form=form)
+    aid = request.args.get('aid')
+    cid = request.args.get('cid')
+    view = request.form.get('view')
+    print(view)
+    if aid:
+        account.delete_one({'account_id':aid})
+        flash("successfully deleted","success")
+        return redirect(url_for('view_account',cid=cid,view=view))
+    return render_template("delete_account.html",delete_account=True,view=view)
+
 
 @app.route("/create_customer",methods=['GET','POST'])
 @app.route("/create_customer/<cid>",methods=['GET','POST'])
@@ -131,6 +163,4 @@ def update_customer():
         else:
             return redirect(url_for('create_customer',cid=form.customerID.data))
     return render_template("update_customer.html",update_customer=True,form=form)
-    
-
     
