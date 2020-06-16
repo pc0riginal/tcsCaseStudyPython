@@ -4,12 +4,13 @@
             <li class="nav-item">
                 <a class="nav-link {% if index %} active {% endif %}" href="{{ url_for('index') }}">Home</a>
             </li>
+            {% if session['type']=='executive' %}
             <li class="nav-item dropdown">
                 <a class="nav-link {% if create_account %} active {% endif %} dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Account Info</a>
                 <div class="dropdown-menu">
                 <a class="dropdown-item" href="{{ url_for('create_account') }}">Create Account</a>
-                <a class="dropdown-item" href="{{ url_for('delete_account') }}">Delete Account</a>
-                <a class="dropdown-item" href="#">Account Detail </a>
+                <a class="dropdown-item" href="{{ url_for('viewAccount') }}">Delete Account</a>
+                <a class="dropdown-item" href="{{ url_for('viewAccount') }}"> Account Details </a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#">Separated link</a>
                 </div>
@@ -25,6 +26,14 @@
                 <a class="dropdown-item" href="#">Separated link</a>
                 </div>
             </li>
+            {% else %}
+            <li class="nav-item">
+                <a class="nav-link {% if view_customer or delete_account %} active {% endif %}" href="{{ url_for('viewAccount',view=True) }}">Account Details</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Account Statement</a>
+            </li>
+            {% endif %}
             <li class="nav-item">
                 <a class="nav-link " href="#" tabindex="-1" aria-disabled="true">About</a>
             </li>
