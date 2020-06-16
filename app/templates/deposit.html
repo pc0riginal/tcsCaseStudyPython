@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>Deposit</h1>     
+            <div class="d-flex justify-content-center align-items-center container">
+                <div class="row ">
+                        <form action="" method="POST" novalidate >
+                            {{ form.hidden_tag() }}
+                            <div class="form-group">
+                                {{ form.customerID.label() }}
+                                {{ form.customerID(disabled=True,class="form-control")}}
+                                {% for error in form.customerID.errors %}
+                                    <span class="alert alert-danger">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            <div class="form-group">
+                                {{ form.accountID.label() }}
+                                {{ form.accountID(disabled=True,class="form-control") }}
+                                {% for error in form.accountID.errors %}
+                                    <span class="alert alert-danger">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            <div class="form-group">
+                                {{ form.amount.label() }}
+                                {{ form.amount(disabled=True,class="form-control") }}
+                                {% for error in form.amount.errors %}
+                                    <span class="alert alert-danger">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            <div class="form-group">
+                                {{ form.depositAmount.label() }}
+                                {{ form.depositAmount(class="form-control") }}
+                                {% for error in form.depositAmount.errors %}
+                                    <span class="alert alert-danger">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            <p>
+                                {{ form.submit(class="btn btn-primary") }}
+                            </p>
+                        </form>   
+                </div>
+        </div>    
+{% endblock %}
