@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>Create your account</h1>
+    <div class="d-flex justify-content-center align-items-center container">
+        <div class="row ">
+                <form action="" method="POST" novalidate >
+                    {{ form.hidden_tag() }}
+                    <div class="form-group">
+                        {{ form.customerID.label() }}
+                        {{ form.customerID(class="form-control")}}
+                        {% for error in form.customerID.errors %}
+                            <span class="alert alert-danger">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {{ form.account_type.label() }}
+                        {{ form.account_type(class="form-control") }}
+                        {% for error in form.account_type.errors %}
+                            <span class="alert alert-danger">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {{ form.amount.label() }}
+                        {{ form.amount(class="form-control") }}
+                        {% for error in form.amount.errors %}
+                            <span class="alert alert-danger">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <p>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </p>
+                </form>    
+            </div>        
+    </div>
+{% endblock %}
