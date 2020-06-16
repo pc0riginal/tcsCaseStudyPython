@@ -33,3 +33,32 @@ class UpdateCustomer(FlaskForm):
     customerID = StringField(label="Customer ID(SSN ID)",validators=[DataRequired(),Regexp('^\\d{9}$',message="required 9 digit ID")])
     submit = SubmitField(label="Update")
     
+class Deposit(FlaskForm):
+    customerID = StringField(label="Customer ID(SSN ID)",validators=[DataRequired(),Regexp('^\\d{9}$',message="required 9 digit ID")])
+    accountID = StringField(label="Account ID",validators=[DataRequired()])
+    amount = IntegerField(label="Amount",validators=[DataRequired()])
+    depositAmount = IntegerField(label="Deposit Amount",validators=[DataRequired()])
+    submit = SubmitField(label="Deposit")
+
+class Withdraw(FlaskForm):
+    customerID = StringField(label="Customer ID(SSN ID)",validators=[DataRequired(),Regexp('^\\d{9}$',message="required 9 digit ID")])
+    accountID = StringField(label="Account ID",validators=[DataRequired()])
+    amount = IntegerField(label="Amount",validators=[DataRequired()])
+    withdrawAmount = IntegerField(label="Withdraw Amount",validators=[DataRequired()])
+    submit = SubmitField(label="Deposit")
+
+    def validate_withdrawAmount(self,field):
+        if int(self.amount.data) <= int(self.withdrawAmount.data):
+            raise ValidationError("withdaw amount less than amount!")
+
+class Transfer(FlaskForm):
+    customerID = StringField(label="Customer ID(SSN ID)",validators=[DataRequired(),Regexp('^\\d{9}$',message="required 9 digit ID")])
+    accountID = StringField(label="Account ID",validators=[DataRequired()])
+    amount = IntegerField(label="Amount",validators=[DataRequired()])
+    targetAccount = StringField(label="Target Account",validators=[DataRequired()])
+    transferAmount = IntegerField(label="Transfer Amount",validators=[DataRequired()])
+    submit = SubmitField(label="Transfer")
+
+    def validate_transferAmount(self,field):
+        if int(self.amount.data) <= int(self.transferAmount.data):
+            raise ValidationError("transfer amount less than amount!")
