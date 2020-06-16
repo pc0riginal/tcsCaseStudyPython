@@ -1,0 +1,91 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>Account Details</h1>     
+            {% if accounts %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">Customer ID</th>
+                        <th scope="col">Account ID</th>
+                        <th scope="col">Account type</th>
+                        <th scope="col">Amount</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for account in accounts %}
+                    <tr>
+                        <td>{{cid}}</td>
+                        <td>{{account['account_id']}}</td>
+                        <td>{{account['account_type']}}</td>
+                        <td>{{account['amount']}}</td>
+                        <td>
+                            {% if view %}
+                            <div class="btn-group" role="group" aria-label="Basic example">
+                                <form action="{{ url_for('deposit') }}" ,method="POST">
+                                    <input type="hidden" name="amount" value="{{account['amount']}}">
+                                    <input type="hidden" name="cid" value="{{cid}}">
+                                    <input type="hidden" name="aid" value="{{account['account_id']}}">
+                                    <button type="submit" class="btn btn-success mr-2">Deposit</button>
+                                </form>
+
+                                <form action="{{ url_for('withdraw') }}" ,method="POST">
+                                    <input type="hidden" name="amount" value="{{account['amount']}}">
+                                    <input type="hidden" name="cid" value="{{cid}}">
+                                    <input type="hidden" name="aid" value="{{account['account_id']}}">
+                                    <button type="submit" class="btn btn-secondary mr-2">Withdraw</button>
+                                </form>
+                                
+                                <form action="{{ url_for('transfer') }}" ,method="POST">
+                                    <input type="hidden" name="amount" value="{{account['amount']}}">
+                                    <input type="hidden" name="cid" value="{{cid}}">
+                                    <input type="hidden" name="aid" value="{{account['account_id']}}">
+                                    <button type="submit" class="btn btn-success">Transfer</button>
+                                </form>
+                            </div>
+                            {% else %}
+                            <form action="{{ url_for('delete_account') }}" ,method="POST">
+                                <input type="hidden" name="cid" value="{{cid}}">
+                                <input type="hidden" name="aid" value="{{account['account_id']}}">
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="d-flex justify-content-center align-items-center container">
+                <div class="row ">
+                        <form action="" method="POST" novalidate >
+                            {{ form.hidden_tag() }}
+                            <div class="form-group">
+                                {{ form.customerID.label() }}
+                                {{ form.customerID(class="form-control")}}
+                                {% for error in form.customerID.errors %}
+                                    <span class="alert alert-danger">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            <div class="form-group">
+                                {{ form.account_type.label() }}
+                                {{ form.account_type(class="form-control") }}
+                                {% for error in form.account_type.errors %}
+                                    <span class="alert alert-danger">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            <p>
+                                {% if view %}
+                                    <input type="hidden" name="view" value="True">
+                                    <button type="submit" class="btn btn-primary">View</button>
+                                {% else %}
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                {% endif %}
+                                <!-- {{ form.submit(class="btn btn-primary") }} -->
+                            </p>
+                        </form>   
+                    </div>
+                    </div>
+            {% endif %}
+    
+{% endblock %}
