@@ -1,6 +1,6 @@
 from app import app,mongo
 from flask import render_template,redirect,url_for,flash,session,request
-from app.forms import LoginForm,CreateAccount,DeleteAccount,CreateCustomer,UpdateCustomer
+from app.forms import LoginForm,CreateAccount,DeleteAccount,CreateCustomer,UpdateCustomer,Deposit,Withdraw,Transfer
 import random
 import string
 
@@ -164,3 +164,62 @@ def update_customer():
             return redirect(url_for('create_customer',cid=form.customerID.data))
     return render_template("update_customer.html",update_customer=True,form=form)
     
+
+@app.route('/deposit',methods=['GET','POST'])
+def deposit():
+    if not session.get("username"):
+        return redirect('/login')
+    form = Deposit()
+    form.customerID.data = request.args.get('cid')
+    form.accountID.data = request.args.get('aid')
+    form.amount.data = request.args.get('amount')
+    if form.validate_on_submit():
+        accountData = account.find_one({"account_id":form.accountID.data})
+        if accountData:
+            account.update_one({"account_id":form.accountID.data},{"$inc":{"amount":form.depositAmount.data}})
+            flash(f"{form.depositAmount.data} amount deposit into this account={form.accountID.data}!","success")
+            return redirect(url_for('view_account',cid=form.customerID.data,view=True))
+        else:
+            flash("account not exist!","danger")
+    return render_template("deposit.html",form=form)
+
+@app.route('/withdraw',methods=['GET','POST'])
+def withdraw():
+    if not session.get("username"):
+        return redirect('/login')
+    form = Withdraw()
+    form.customerID.data = request.args.get('cid')
+    form.accountID.data = request.args.get('aid')
+    form.amount.data = request.args.get('amount')
+    if form.validate_on_submit():
+        accountData = account.find_one({"account_id":form.accountID.data})
+        if accountData:
+            withdrawAmount = form.withdrawAmount.data*-1
+            account.update_one({"account_id":form.accountID.data},{"$inc":{"amount": withdrawAmount}})
+            flash(f"{form.withdrawAmount.data} amount withdraw from this account={form.accountID.data}!","success")
+            return redirect(url_for('view_account',cid=form.customerID.data,view=True))
+        else:
+            flash("account not exist!","danger")
+    return render_template("withdraw.html",form=form)
+
+@app.route('/transfer',methods=['GET','POST'])
+def transfer():
+    if not session.get("username"):
+        return redirect('/login')
+    form = Transfer()
+    form.customerID.data = request.args.get('cid')
+    form.accountID.data = request.args.get('aid')
+    form.amount.data = request.args.get('amount')
+    if form.validate_on_submit():
+        accountData = account.find_one({"account_id":form.accountID.data})
+        targetAccountData = account.find_one({"account_id":form.targetAccount.data})
+        if accountData and targetAccountData:
+            transferAmount = form.transferAmount.data*-1
+            account.update_one({"account_id":form.accountID.data},{"$inc":{"amount": transferAmount}})
+            account.update_one({"account_id":form.targetAccount.data},{"$inc":{"amount": form.transferAmount.data}})
+            flash(f"{form.transferAmount.data} amount transfer from this account={form.accountID.data}!","success")
+            return redirect(url_for('view_account',cid=form.customerID.data,view=True))
+        else:
+            flash("account not exist!","danger")
+    return render_template("transfer.html",form=form)
+
