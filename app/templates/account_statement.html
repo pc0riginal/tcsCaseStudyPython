@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>Statement</h1>     
+            <div class="d-flex justify-content-center align-items-center container">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">Customer ID</th>
+                        <th scope="col">Account ID</th>
+                        <th scope="col">Account Type</th>
+                        <th scope="col">Staus</th>
+                        <th scope="col">Message</th>
+                        <th scope="col">Last Updated</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for statement in accountStatements %}
+                    <tr>
+                        <td>{{statement['customer_id']}}</td>
+                        <td>{{statement['account_id']}}</td>
+                        <td>{{statement['account_type']}}</td>
+                        <td>{{statement['status']}}</td>
+                        <td>{{statement['message']}}</td>
+                        <td>{{statement['last_updated']}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+{% endblock %}
