@@ -1,12 +1,18 @@
 from app import app,mongo
 from flask import render_template,redirect,url_for,flash,session,request
-from app.forms import LoginForm,CreateAccount,DeleteAccount,CreateCustomer,UpdateCustomer,Deposit,Withdraw,Transfer
+from app.forms import LoginForm,CreateAccount,DeleteAccount,CreateCustomer,UpdateCustomer,Deposit,Withdraw,Transfer,Statement
 import random
 import string
+from datetime import date
+import datetime
+import dateutil.parser as parser
 
 user = mongo.db['user']
 customer = mongo.db['customer']
 account = mongo.db['account']
+state = mongo.db['statement']
+cusStatus = mongo.db['customerStatus']
+accStatus = mongo.db['accountStatus']
 
 @app.route('/')
 @app.route('/index')
@@ -20,8 +26,8 @@ def login():
     if session.get("username"):
         return redirect("/index")
     form = LoginForm()
-    form.username.data ='tcs102'
-    form.password.data = 'tcs1023'
+    form.username.data ='tcs101'
+    form.password.data = 'tcs12345'
     if form.validate_on_submit():
         userData = user.find_one({"username":form.username.data})
         if userData and userData['password'] == form.password.data:
@@ -38,6 +44,7 @@ def login():
 def create_account():
     if not session.get("username"):
         return redirect('/login')
+    print(date)
     form = CreateAccount()
     if form.validate_on_submit():
         customerData = customer.find_one({"customer_id":form.customerID.data})
@@ -45,6 +52,8 @@ def create_account():
             account_id = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(32)]) 
             account.insert_one({"customer_id":form.customerID.data,"account_id":account_id,"account_type":form.account_type.data,"amount":form.amount.data})
             customer.update_one({"customer_id":form.customerID.data},{"$push":{"accounts":account_id}})
+            accStatus.insert_one({"customer_id":form.customerID.data,"account_id":account_id,
+            "account_type":form.account_type.data,"status":"active","message":"created","last_updated":date.today().strftime("%Y-%m-%d")})
             flash(f"{customerData['name']} Thank you for creating {form.account_type.data} account with amount={form.amount.data}","success")
         else:
             flash(f"sorry try again","danger")
@@ -83,6 +92,8 @@ def delete_account():
     print(view)
     if aid:
         account.delete_one({'account_id':aid})
+        accStatus.insert_one({"customer_id":cid,"account_id":aid,
+        "account_type":"saving","status":"deactive","message":"deleted","last_updated":date.today().strftime("%Y-%m-%d")})
         flash("successfully deleted","success")
         return redirect(url_for('view_account',cid=cid,view=view))
     return render_template("delete_account.html",delete_account=True,view=view)
@@ -109,11 +120,14 @@ def create_customer(cid=None):
         if not customerData and cid==None:
             customer.insert_one({"customer_id":form.customerID.data,"name":form.name.data,"age":form.age.data,"addressline1":form.addressline1.data,
             "addressline2":form.addressline2.data,"city":form.city.data,"state":form.state.data,"accounts":[]})
+            cusStatus.insert_one({"customer_id":form.customerID.data,"status":"active","message":"created","last_updated":date.today().strftime("%Y-%m-%d")})
             flash(f"{form.name.data} your account successfully created!","success")
         elif customerData and cid:
+            print("hi")
             data = request.form
             customer.update_one({"_id":customerData['_id']},{"$set":{"name":data.get('name'),"age":data.get('age'),"addressline1":data.get('addressline1'),
             "addressline2":data.get('addressline2'),"city":data.get('city'),"state":data.get('state')}})
+            cusStatus.insert_one({"customer_id":form.customerID.data,"status":"active","message":"updated","last_updated":date.today().strftime("%Y-%m-%d")})
             flash(f"{form.name.data} your account successfully updated!","success")
             return redirect('/update_customer')
         else:
@@ -144,6 +158,7 @@ def deleteCustomer():
     elif delete=='True':
         customer.delete_one({"customer_id":customer_id})
         account.delete_many({"customer_id":customer_id})
+        cusStatus.insert_one({"customer_id":customer_id,"status":"deactive","message":"deleted","last_updated":date.today().strftime("%Y-%m-%d")})
         flash(f"{customer_id} deleted successfully ","danger")
         return redirect("/view_customer")
     else:
@@ -177,6 +192,9 @@ def deposit():
         accountData = account.find_one({"account_id":form.accountID.data})
         if accountData:
             account.update_one({"account_id":form.accountID.data},{"$inc":{"amount":form.depositAmount.data}})
+            statement_id = ''.join([random.choice(string.digits) for n in range(9)]) 
+            state.insert_one({'customer_id':form.customerID.data,'account_id':form.accountID.data,"transaction_id":statement_id,
+            "action":"deposit","amount":form.depositAmount.data,"date":date.today().strftime("%Y-%m-%d")})
             flash(f"{form.depositAmount.data} amount deposit into this account={form.accountID.data}!","success")
             return redirect(url_for('view_account',cid=form.customerID.data,view=True))
         else:
@@ -196,6 +214,9 @@ def withdraw():
         if accountData:
             withdrawAmount = form.withdrawAmount.data*-1
             account.update_one({"account_id":form.accountID.data},{"$inc":{"amount": withdrawAmount}})
+            statement_id = ''.join([random.choice(string.digits) for n in range(9)]) 
+            state.insert_one({'customer_id':form.customerID.data,'account_id':form.accountID.data,"transaction_id":statement_id,
+            "action":"withdraw","amount":form.withdrawAmount.data,"date":date.today().strftime("%Y-%m-%d")})
             flash(f"{form.withdrawAmount.data} amount withdraw from this account={form.accountID.data}!","success")
             return redirect(url_for('view_account',cid=form.customerID.data,view=True))
         else:
@@ -217,9 +238,70 @@ def transfer():
             transferAmount = form.transferAmount.data*-1
             account.update_one({"account_id":form.accountID.data},{"$inc":{"amount": transferAmount}})
             account.update_one({"account_id":form.targetAccount.data},{"$inc":{"amount": form.transferAmount.data}})
+            statement_id = ''.join([random.choice(string.digits) for n in range(9)]) 
+            state.insert_one({'customer_id':form.customerID.data,'account_id':form.accountID.data,"transaction_id":statement_id,
+            "action":"transfer","amount":form.transferAmount.data,"date":date.today().strftime("%Y-%m-%d")})
             flash(f"{form.transferAmount.data} amount transfer from this account={form.accountID.data}!","success")
             return redirect(url_for('view_account',cid=form.customerID.data,view=True))
         else:
             flash("account not exist!","danger")
     return render_template("transfer.html",form=form)
 
+@app.route('/statement',methods=['GET','POST'])
+def statement():
+    # if not session.get("username"):
+    #     return redirect('/login')
+    maxdate = date.today()
+    # strtime = maxdate.strftime("%Y-%m-%d")
+    statements=None
+    request.form.get('start')
+    form = Statement()
+    if form.validate_on_submit():
+        if form.nTransaction.data == "None":
+            if request.form.get('start') and request.form.get('end'):
+                accountOne = account.find_one({"account_id":form.accountID.data})
+                if accountOne:
+                    statements = state.find({"account_id":form.accountID.data,"date":{"$gte":request.form.get('start'),"$lte":request.form.get('end')}})
+                else:
+                    flash("please enter valid account id","danger")
+            else:
+                flash("Please select ntransaction or date","danger")
+        elif request.form.get('start')==" " or request.form.get('end')==" ":
+            if form.nTransaction.data:
+                accountOne = account.find_one({"account_id":form.accountID.data})
+                if accountOne:
+                    statements = state.find({"account_id":form.accountID.data}).sort([("date",1)]).limit(int(form.nTransaction.data))
+                else:
+                    flash("please enter valid account id","danger")
+            else:
+                flash("Please select ntransaction or date","danger") 
+        elif form.nTransaction.data:
+            accountOne = account.find_one({"account_id":form.accountID.data})
+            if accountOne:
+                statements = state.find({"account_id":form.accountID.data}).sort([("date",1)]).limit(int(form.nTransaction.data))
+            else:
+                flash("please enter valid account id","danger")
+
+    return render_template('statement.html',statement=True,form=form,maxdate=maxdate,statements=statements)
+
+
+@app.route("/logout",methods=['GET','POST'])
+def logout():
+    if not session.get('username'):
+        return redirect('/login')
+    session.pop('username')
+    return redirect('/login')
+
+@app.route('/customer_statement',methods=['GET','POST'])
+def customer_statement():
+    if not session.get('username'):
+        return redirect('/login')
+    customerStatements = cusStatus.find()
+    return render_template('customer_statement.html',customer_statement=True,customerStatements=customerStatements)
+
+@app.route('/account_statement',methods=['GET','POST'])
+def account_statement():
+    if not session.get('username'):
+        return redirect('/login')
+    accountStatements = accStatus.find()
+    return render_template('account_statement.html',account_statement=True,accountStatements=accountStatements)
