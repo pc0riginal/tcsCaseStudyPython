@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>Statement</h1>     
+            <div class="d-flex justify-content-center align-items-center container">
+            {% if statements %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">Customer ID</th>
+                        <th scope="col">Account ID</th>
+                        <th scope="col">Transaction ID</th>
+                        <th scope="col">Action</th>
+                        <th scope="col">Amount</th>
+                        <th scope="col">Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for statement in statements %}
+                    <tr>
+                        <td>{{statement['customer_id']}}</td>
+                        <td>{{statement['account_id']}}</td>
+                        <td>{{statement['transaction_id']}}</td>
+                        <td>{{statement['action']}}</td>
+                        <td>{{statement['amount']}}</td>
+                        <td>{{statement['date']}}</td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                        <form id="foo" method="post" action="" novalidate >
+                            {{ form.hidden_tag() }}
+                            <div class="form-group">
+                                {{ form.accountID.label() }}
+                                {{ form.accountID(class="form-control") }}
+                                {% for error in form.accountID.errors %}
+                                    <span class="alert alert-danger">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            <div class="form-group">
+                                {{ form.nTransaction.label() }}
+                                {{ form.nTransaction(class="form-control") }}
+                                {% for error in form.nTransaction.errors %}
+                                    <span class="alert alert-danger">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            <div class="form-group">
+                                <label >Start</label>
+                                <input type="date" name="start"  value="None" id="start" max="{{maxdate}}"
+                                       min="1000-01-01" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label >Date</label>
+                                <input type="date" name="end" value="None" min="???" id='end' disabled=True
+                                       max="{{maxdate}}" class="form-control">
+                            </div>
+                            <p>
+                                {{ form.submit(class="btn btn-primary") }}
+                            </p>
+                        </form>   
+                </div>
+                {% endif %}
+        <script>
+            $("#start").change(function() {
+                $('#end').attr({
+                    "min":document.getElementById("start").value,
+                    "disabled":false
+                });
+            });
+
+
+        </script>
+{% endblock %}
