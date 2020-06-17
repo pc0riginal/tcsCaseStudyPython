@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm,RecaptchaField
-from wtforms import StringField,PasswordField,SubmitField,SelectField,IntegerField
-from wtforms.validators import DataRequired,Required,NumberRange,Regexp,Length,ValidationError
+from wtforms import StringField,PasswordField,SubmitField,SelectField,IntegerField,DateField
+from wtforms.validators import DataRequired,Required,NumberRange,Regexp,Length,ValidationError,Optional
 
 class LoginForm(FlaskForm):
     username = StringField(label="Username",validators=[DataRequired()])
@@ -45,7 +45,7 @@ class Withdraw(FlaskForm):
     accountID = StringField(label="Account ID",validators=[DataRequired()])
     amount = IntegerField(label="Amount",validators=[DataRequired()])
     withdrawAmount = IntegerField(label="Withdraw Amount",validators=[DataRequired()])
-    submit = SubmitField(label="Deposit")
+    submit = SubmitField(label="Withdraw")
 
     def validate_withdrawAmount(self,field):
         if int(self.amount.data) <= int(self.withdrawAmount.data):
@@ -62,3 +62,11 @@ class Transfer(FlaskForm):
     def validate_transferAmount(self,field):
         if int(self.amount.data) <= int(self.transferAmount.data):
             raise ValidationError("transfer amount less than amount!")
+
+trans = [('None','None')]+[(str(i),str(i)) for i in range(1,11)]
+class Statement(FlaskForm):
+    accountID = StringField(label="Account ID",validators=[DataRequired()])
+    nTransaction =  SelectField(label="N Transaction",choices=trans)
+    # start = DateField('Start Date', format='%m-%d-%Y',validators=(Optional(),))
+    # end = DateField('End Date', format='%m/%d/%Y',validators=(Optional(),))
+    submit = SubmitField(label="Statement")    
