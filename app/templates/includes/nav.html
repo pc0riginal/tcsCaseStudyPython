@@ -6,36 +6,32 @@
             </li>
             {% if session['type']=='executive' %}
             <li class="nav-item dropdown">
-                <a class="nav-link {% if create_account %} active {% endif %} dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Account Info</a>
+                <a class="nav-link {% if create_account or delete_account or account_statement %} active {% endif %} dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Account Info</a>
                 <div class="dropdown-menu">
                 <a class="dropdown-item" href="{{ url_for('create_account') }}">Create Account</a>
                 <a class="dropdown-item" href="{{ url_for('viewAccount') }}">Delete Account</a>
-                <a class="dropdown-item" href="{{ url_for('viewAccount') }}"> Account Details </a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">Separated link</a>
-                </div>
+                <a class="dropdown-item" href="{{ url_for('account_statement') }}">Account Statement</a>
+                <!-- <a class="dropdown-item" href="{{ url_for('viewAccount') }}"> Account Details </a> -->
             </li>
             <li class="nav-item dropdown">
-                <a class="nav-link {% if (create_customer or delete_customer) %} active {% endif %} dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Customer Info</a>
+                <a class="nav-link {% if (create_customer or delete_customer or customer_statement or update_customer) %} active {% endif %} dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Customer Info</a>
                 <div class="dropdown-menu">
                 <a class="dropdown-item" href="{{ url_for('create_customer') }}">Create Customer</a>
                 <a class="dropdown-item" href="{{ url_for('view_customer') }}">Delete Customer</a>
                 <a class="dropdown-item" href="{{ url_for('view_customer',view=True) }}">View Customer</a>
                 <a class="dropdown-item" href="{{ url_for('update_customer') }}">Update Customer</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">Separated link</a>
-                </div>
+                <a class="dropdown-item" href="{{ url_for('customer_statement') }}">Customer Statement</a>
             </li>
             {% else %}
             <li class="nav-item">
                 <a class="nav-link {% if view_customer or delete_account %} active {% endif %}" href="{{ url_for('viewAccount',view=True) }}">Account Details</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Account Statement</a>
+                <a class="nav-link {% if statement %} active {% endif %}" href="{{ url_for('statement') }}">Account Statement</a>
             </li>
             {% endif %}
             <li class="nav-item">
-                <a class="nav-link " href="#" tabindex="-1" aria-disabled="true">About</a>
+                <a class="nav-link " href="{{ url_for('logout') }}" tabindex="-1" aria-disabled="true">Logout</a>
             </li>
         </ul>
     </div>
