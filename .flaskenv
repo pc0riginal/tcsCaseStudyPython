@@ -1,3 +1,3 @@
-FLASK_ENV=production
+FLASK_ENV=development
 FLASK_APP=main.py
 DEBUG_MODE=on
