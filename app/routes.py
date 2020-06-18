@@ -26,8 +26,6 @@ def login():
     if session.get("username"):
         return redirect("/index")
     form = LoginForm()
-    form.username.data ='tcs101'
-    form.password.data = 'tcs12345'
     if form.validate_on_submit():
         userData = user.find_one({"username":form.username.data})
         if userData and userData['password'] == form.password.data:
