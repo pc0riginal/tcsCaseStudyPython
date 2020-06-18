@@ -36,7 +36,7 @@ def login():
             session['type'] = userData['type']
             return redirect("/index",)
         else:
-            flash("sorry try again!","danger")
+            flash("user not exist!","danger")
     return render_template("login.html",login=True,title="Login",form=form)        
 
 
@@ -56,7 +56,7 @@ def create_account():
             "account_type":form.account_type.data,"status":"active","message":"created","last_updated":date.today().strftime("%Y-%m-%d")})
             flash(f"{customerData['name']} Thank you for creating {form.account_type.data} account with amount={form.amount.data}","success")
         else:
-            flash(f"sorry try again","danger")
+            flash(f"customer not found!","danger")
     return render_template("create_account.html",create_account=True,form=form)
 
 @app.route('/viewAccount',methods=['GET','POST'])
