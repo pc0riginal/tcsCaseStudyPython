@@ -294,12 +294,12 @@ def logout():
 def customer_statement():
     if not session.get('username'):
         return redirect('/login')
-    customerStatements = cusStatus.find()
+    customerStatements = cusStatus.find().sort([("last_updated",1)])
     return render_template('customer_statement.html',customer_statement=True,customerStatements=customerStatements)
 
 @app.route('/account_statement',methods=['GET','POST'])
 def account_statement():
     if not session.get('username'):
         return redirect('/login')
-    accountStatements = accStatus.find()
+    accountStatements = accStatus.find().sort([("last_updated",1)])
     return render_template('account_statement.html',account_statement=True,accountStatements=accountStatements)
